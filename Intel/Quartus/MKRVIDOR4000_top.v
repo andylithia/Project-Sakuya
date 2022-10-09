@@ -112,11 +112,18 @@ end
 
 wire loe/*synthesis keep*/;
 wire hoe/*synthesis keep*/;
-wire [4:0] f_din/*synthesis keep*/;
-wire [4:0] f_dout/*synthesis keep*/;
-assign f_din = bMKR_D[4:0];
-assign bMKR_A[4:0] = f_dout;
-assign f_dout = f_din + 1;
+wire [127:0] f_din;
+wire [127:0] f_dout1/*synthesis keep*/;
+wire [127:0] f_dout;
+assign f_din = {128{1'b1}};
+assign bMKR_A[4:0] = f_dout1[127-:5];
+
+always @ (posedge iCLK) begin
+	f_dout1 <= f_dout;
+end
+
+delayline #(.LENGTH(128)) dut(.din(f_din[0]),.dout(f_dout));
+
 /*
 fudge f1(
 	.clk(bWM_PIO31),
