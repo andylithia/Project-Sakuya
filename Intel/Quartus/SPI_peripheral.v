@@ -151,7 +151,6 @@ module SPI_Peripheral
     end
   end
 
-
   // Purpose: Transmits 1 SPI Byte whenever SPI clock is toggling
   // Will transmit read data back to SW over CIPO line.
   // Want to put data on the line immediately when CS goes low.

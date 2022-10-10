@@ -38,9 +38,9 @@ const unsigned char bitstream[] = {
   #include "app.h"
 };
 
-int FPGAVal=HIGH;
-const int SPEED=5;
-const int FPGALED=6;
+// int FPGAVal=HIGH;
+// const int SPEED=5;
+// const int FPGALED=6;
 
 // the setup function runs once when you press reset or power the board
 void setup() {
@@ -65,7 +65,7 @@ void setup() {
   delay(1000);
 
   // Configure onboard LED Pin as output
-  pinMode(LED_BUILTIN, OUTPUT);
+  // pinMode(LED_BUILTIN, OUTPUT);
 
   // Disable all JTAG Pins (usefull for USB BLASTER connection)
   pinMode(TDO, INPUT);
@@ -74,37 +74,38 @@ void setup() {
   pinMode(TCK, INPUT);
 
   // Configure other share pins as input too
-  pinMode(SIGNAL_IN, INPUT);  // oSAM_INTstat
-  pinMode(MB_INT_PIN, INPUT);
-  pinMode(MB_INT, INPUT);
-  Serial.begin(9600);
-  pinMode(SPEED,OUTPUT);
-  pinMode(FPGALED,INPUT);
-  digitalWrite(SPEED,FPGAVal);
-  while (!Serial);
-  Serial.println("Press any key to toggle blink rate");
+  // pinMode(SIGNAL_IN, INPUT);  // oSAM_INTstat
+  // pinMode(MB_INT_PIN, INPUT);
+  // pinMode(MB_INT, INPUT);
+  // Serial.begin(115200);
+  // pinMode(SPEED,OUTPUT);
+  // pinMode(FPGALED,INPUT);
+  // digitalWrite(SPEED,FPGAVal);
+  // while (!Serial);
+  // Serial.println("Press any key to toggle blink rate");
+
 }
 
 
 // the loop function runs over and over again forever
 void loop() {
-   static int oldstate=-1;
-   static int linect=0;
-   int state;
-   if (Serial.read()!=-1)
-   {
-      FPGAVal=FPGAVal==HIGH?LOW:HIGH;
-      digitalWrite(SPEED,FPGAVal);
-   }                  
-   state=digitalRead(FPGALED);
-   if (state!=oldstate)
-   {
-    Serial.print(state);
-    if (++linect==16) 
-      {
-        Serial.println();
-        linect=0;
-      }
-    oldstate=state;
-   }
+   // static int oldstate=-1;
+   // static int linect=0;
+   // int state;
+   // if (Serial.read()!=-1)
+   // {
+   //    FPGAVal=FPGAVal==HIGH?LOW:HIGH;
+   //    digitalWrite(SPEED,FPGAVal);
+   // }                  
+   // state=digitalRead(FPGALED);
+   // if (state!=oldstate)
+   // {
+   //  Serial.print(state);
+   //  if (++linect==16) 
+   //    {
+   //      Serial.println();
+   //      linect=0;
+   //    }
+   //  oldstate=state;
+   // }
 }

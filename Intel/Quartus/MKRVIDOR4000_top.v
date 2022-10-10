@@ -43,12 +43,38 @@ module MKRVIDOR4000_top
   // SAM D21 PINS
   inout         bMKR_AREF,
   output  [6:0]  bMKR_A,
-  input  [14:0] bMKR_D
+  input  [12:0]  bMKR_D,
+  input          mcu_tx,
+  output         mcu_rx
 
 );
 
-// signal declaration
+wire wCLK10;
 
+assign wCLK48      = iCLK;
+assign bMKR_A[0] = wCLK10;
+// system PLL
+SYSTEM_PLL PLL_inst(
+  .areset(1'b0),
+  .inclk0(wCLK48),
+  .c0    (wCLK10),
+  .c1    (),
+  .c2    (),
+  .c3    (),
+  .c4    (),
+  .locked());
+  
+  
+dl_platform u_dut(
+	.clk10m(wCLK10),
+	.rst_n (iRESETn),
+	.tdc_start(1'b0),
+	.tdc_stop (1'b0),
+	.tdc_pulse(),
+	.txd      (mcu_rx)
+);
+  
+// signal declaration
 /*
 wire        wOSC_CLK;
 
@@ -110,19 +136,20 @@ end
 	output [4:0] dat_smp);
 	*/
 
-wire loe/*synthesis keep*/;
-wire hoe/*synthesis keep*/;
-wire [127:0] f_din;
-wire [127:0] f_dout1/*synthesis keep*/;
-wire [127:0] f_dout;
-assign f_din = {128{1'b1}};
-assign bMKR_A[4:0] = f_dout1[127-:5];
+	
+//wire loe/*synthesis keep*/;
+//wire hoe/*synthesis keep*/;
+//wire [127:0] f_din;
+//wire [127:0] f_dout1/*synthesis keep*/;
+//wire [127:0] f_dout;
+//assign f_din = {128{1'b1}};
+//assign bMKR_A[4:0] = f_dout1[127-:5];
 
-always @ (posedge iCLK) begin
-	f_dout1 <= f_dout;
-end
+//always @ (posedge iCLK) begin
+//	f_dout1 <= f_dout;
+//end
 
-delayline #(.LENGTH(128)) dut(.din(f_din[0]),.dout(f_dout));
+//delayline #(.LENGTH(128)) dut(.din(f_din[0]),.dout(f_dout));
 
 /*
 fudge f1(
