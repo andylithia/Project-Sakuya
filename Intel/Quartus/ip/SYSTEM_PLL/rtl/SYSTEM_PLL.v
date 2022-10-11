@@ -124,10 +124,10 @@ module SYSTEM_PLL (
 		altpll_component.clk0_duty_cycle = 50,
 		altpll_component.clk0_multiply_by = 5,
 		altpll_component.clk0_phase_shift = "0",
-		altpll_component.clk1_divide_by = 2,
+		altpll_component.clk1_divide_by = 24,
 		altpll_component.clk1_duty_cycle = 50,
 		altpll_component.clk1_multiply_by = 5,
-		altpll_component.clk1_phase_shift = "0",
+		altpll_component.clk1_phase_shift = "139",
 		altpll_component.clk2_divide_by = 12,
 		altpll_component.clk2_duty_cycle = 50,
 		altpll_component.clk2_multiply_by = 25,
@@ -224,7 +224,7 @@ endmodule
 // Retrieval info: PRIVATE: DUTY_CYCLE3 STRING "50.00000000"
 // Retrieval info: PRIVATE: DUTY_CYCLE4 STRING "50.00000000"
 // Retrieval info: PRIVATE: EFF_OUTPUT_FREQ_VALUE0 STRING "10.000000"
-// Retrieval info: PRIVATE: EFF_OUTPUT_FREQ_VALUE1 STRING "120.000000"
+// Retrieval info: PRIVATE: EFF_OUTPUT_FREQ_VALUE1 STRING "10.000000"
 // Retrieval info: PRIVATE: EFF_OUTPUT_FREQ_VALUE2 STRING "100.000000"
 // Retrieval info: PRIVATE: EFF_OUTPUT_FREQ_VALUE3 STRING "100.000000"
 // Retrieval info: PRIVATE: EFF_OUTPUT_FREQ_VALUE4 STRING "60.000000"
@@ -265,7 +265,7 @@ endmodule
 // Retrieval info: PRIVATE: MULT_FACTOR4 NUMERIC "1"
 // Retrieval info: PRIVATE: NORMAL_MODE_RADIO STRING "1"
 // Retrieval info: PRIVATE: OUTPUT_FREQ0 STRING "10.00000000"
-// Retrieval info: PRIVATE: OUTPUT_FREQ1 STRING "120.00000000"
+// Retrieval info: PRIVATE: OUTPUT_FREQ1 STRING "10.00000000"
 // Retrieval info: PRIVATE: OUTPUT_FREQ2 STRING "100.00000000"
 // Retrieval info: PRIVATE: OUTPUT_FREQ3 STRING "100.00000000"
 // Retrieval info: PRIVATE: OUTPUT_FREQ4 STRING "60.00000000"
@@ -282,13 +282,13 @@ endmodule
 // Retrieval info: PRIVATE: PHASE_RECONFIG_FEATURE_ENABLED STRING "1"
 // Retrieval info: PRIVATE: PHASE_RECONFIG_INPUTS_CHECK STRING "0"
 // Retrieval info: PRIVATE: PHASE_SHIFT0 STRING "0.00000000"
-// Retrieval info: PRIVATE: PHASE_SHIFT1 STRING "0.00000000"
+// Retrieval info: PRIVATE: PHASE_SHIFT1 STRING "138.88666700"
 // Retrieval info: PRIVATE: PHASE_SHIFT2 STRING "0.00000000"
 // Retrieval info: PRIVATE: PHASE_SHIFT3 STRING "180.00000000"
 // Retrieval info: PRIVATE: PHASE_SHIFT4 STRING "0.00000000"
 // Retrieval info: PRIVATE: PHASE_SHIFT_STEP_ENABLED_CHECK STRING "0"
 // Retrieval info: PRIVATE: PHASE_SHIFT_UNIT0 STRING "deg"
-// Retrieval info: PRIVATE: PHASE_SHIFT_UNIT1 STRING "deg"
+// Retrieval info: PRIVATE: PHASE_SHIFT_UNIT1 STRING "ps"
 // Retrieval info: PRIVATE: PHASE_SHIFT_UNIT2 STRING "deg"
 // Retrieval info: PRIVATE: PHASE_SHIFT_UNIT3 STRING "deg"
 // Retrieval info: PRIVATE: PHASE_SHIFT_UNIT4 STRING "ps"
@@ -339,10 +339,10 @@ endmodule
 // Retrieval info: CONSTANT: CLK0_DUTY_CYCLE NUMERIC "50"
 // Retrieval info: CONSTANT: CLK0_MULTIPLY_BY NUMERIC "5"
 // Retrieval info: CONSTANT: CLK0_PHASE_SHIFT STRING "0"
-// Retrieval info: CONSTANT: CLK1_DIVIDE_BY NUMERIC "2"
+// Retrieval info: CONSTANT: CLK1_DIVIDE_BY NUMERIC "24"
 // Retrieval info: CONSTANT: CLK1_DUTY_CYCLE NUMERIC "50"
 // Retrieval info: CONSTANT: CLK1_MULTIPLY_BY NUMERIC "5"
-// Retrieval info: CONSTANT: CLK1_PHASE_SHIFT STRING "0"
+// Retrieval info: CONSTANT: CLK1_PHASE_SHIFT STRING "139"
 // Retrieval info: CONSTANT: CLK2_DIVIDE_BY NUMERIC "12"
 // Retrieval info: CONSTANT: CLK2_DUTY_CYCLE NUMERIC "50"
 // Retrieval info: CONSTANT: CLK2_MULTIPLY_BY NUMERIC "25"

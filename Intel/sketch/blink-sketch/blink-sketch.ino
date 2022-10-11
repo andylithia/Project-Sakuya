@@ -77,7 +77,8 @@ void setup() {
   // pinMode(SIGNAL_IN, INPUT);  // oSAM_INTstat
   // pinMode(MB_INT_PIN, INPUT);
   // pinMode(MB_INT, INPUT);
-  // Serial.begin(115200);
+  Serial.begin(115200);
+  Serial1.begin(115200);
   // pinMode(SPEED,OUTPUT);
   // pinMode(FPGALED,INPUT);
   // digitalWrite(SPEED,FPGAVal);
@@ -86,9 +87,15 @@ void setup() {
 
 }
 
+int incomingByte = 0;
 
 // the loop function runs over and over again forever
 void loop() {
+   if (Serial1.available()>0){
+     incomingByte = Serial1.read();
+     Serial.print(incomingByte,HEX);
+     Serial.print('\n');
+   }
    // static int oldstate=-1;
    // static int linect=0;
    // int state;

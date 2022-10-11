@@ -22,29 +22,38 @@
 
 // Delayline Toplevel
 
-module dl_platform (
-    input    clk10m,    // 10 MHz Fast Clock
-    input    rst_n,     // Global Reset
-    input    tdc_start, // external
-    input    tdc_stop,  // external
-    output   tdc_pulse, // going out
-    output   txd,       // UART TX
-    output   txdone     // 
+module dl_platform #(
+    parameter DATASIZE = 64
+)(
+    input    clk10m,        // 10 MHz Fast Clock
+    input    clk10m_dly,    // 10 MHz Fast Clock with extra delay
+    input    rst_n,         // Global Reset
+    input    tdc_start,     // Delayline input
+    // input    tdc_stop,      // TDC Latch input
+    output   clk_sampling,  // 30Hz Sampling Clock
+    output   clk_sampling_dly,
+    output   txd,           // UART TX
+    output   txdone         // UART TX - byte is finished
 );
 
-parameter TARGET_FREQ  = 30;
+
+// ░█▀▀░█░░░█▀█░█▀▀░█░█░░░█▀▀░█▀▀░█▀█░
+// ░█░░░█░░░█░█░█░░░█▀▄░░░█░█░█▀▀░█░█░
+// ░▀▀▀░▀▀▀░▀▀▀░▀▀▀░▀░▀░░░▀▀▀░▀▀▀░▀░▀░
+// parameter  TARGET_FREQ  = 30;
+parameter  TARGET_FREQ  = 1;
 localparam SYSTEM_FREQ = 10000000;
 localparam HALF_DIV    = (SYSTEM_FREQ/TARGET_FREQ/2);
 
-reg [$clog2(HALF_DIV):0] clkdiv_r;      // 
-reg                      clk_slow_r;    // 30 Hz Slow Clock
-
+reg [$clog2(HALF_DIV):0]    clkdiv_r;      // 
+reg                         clk_slow_r;    // 30 Hz Slow Clock
+assign                      clk_sampling = clk_slow_r;
 always @(posedge clk10m or negedge rst_n) begin
     if(~rst_n) begin
-        clkdiv_r <= 0;
+        clkdiv_r  <= 0;
     end else begin
         if(clkdiv_r == HALF_DIV) begin
-            clkdiv_r <= 0;
+            clkdiv_r   <= 0;
             clk_slow_r <= 1;
         end else begin
             clkdiv_r <= clkdiv_r + 1;
@@ -53,12 +62,104 @@ always @(posedge clk10m or negedge rst_n) begin
     end
 end
 
+// ░▀█▀░█▀▄░█▀▀░
+// ░░█░░█░█░█░░░
+// ░░▀░░▀▀░░▀▀▀░
+
+// Generate a small internal delay to compensate for the I/O delay
+//localparam INTERNAL_DLY_LEN = 8;
+//wire [INTERNAL_DLY_LEN-1:0] compensate_delayline1_d;
+//wire [INTERNAL_DLY_LEN-1:0] compensate_delayline2_d;
+//delayline #(.LENGTH(INTERNAL_DLY_LEN)) u_DLY_start(
+//    .din(tdc_pulse)
+//)
+
+reg clk_slow_dly_r;
+always @(posedge clk10m_dly) begin
+    clk_slow_dly_r <= clk_slow_r;
+end
+
+wire [DATASIZE-1:0] tdc_delayline_d;
+reg  [DATASIZE-1:0] tdc_dq_r/*synthesis keep*/;
+delayline #(.LENGTH(DATASIZE)) u_DUT(
+    .din (tdc_start),
+    .dout(tdc_delayline_d)
+);
+always @(posedge clk_sampling_dly) begin
+    tdc_dq_r <= tdc_delayline_d;   
+end
+
+wire [DATASIZE-1:0] test_DATA = 64'hAA01_2345_AA01_2345;
+// wire [DATASIZE-1:0] test_DATA = tdc_dq_r;
+
+// ░█░█░█▀█░█▀▄░▀█▀░░░▀█▀░█░█░░░█▀▀░█▀█░█▀█░▀█▀░█▀▄░█▀█░█░░
+// ░█░█░█▀█░█▀▄░░█░░░░░█░░▄▀▄░░░█░░░█░█░█░█░░█░░█▀▄░█░█░█░░
+// ░▀▀▀░▀░▀░▀░▀░░▀░░░░░▀░░▀░▀░░░▀▀▀░▀▀▀░▀░▀░░▀░░▀░▀░▀▀▀░▀▀▀
+wire [4:0] ulim = 7;
+reg  [4:0] datasel_r;
+reg [7:0]  datamux;
+reg [7:0]  datamux_r;
+reg [1:0]  SS_r;
+reg        tx_push_r;
+
+localparam SS_IDLE        = 2'b00;
+localparam SS_SEND        = 2'b01;
+localparam SS_WAIT_SEND   = 2'b11;
+localparam SS_WAIT_SAMPLE = 2'b10;
+
+// Intel tools doesn't support variable as range select
+always @* begin
+//  datamux = test_DATA[(datasel_r*(8+1))-1:datasel_r*8];
+    case(datasel_r)
+          0: datamux = test_DATA[ 7: 0];
+          1: datamux = test_DATA[15: 8];
+          2: datamux = test_DATA[23:16];
+          3: datamux = test_DATA[31:24];
+          4: datamux = test_DATA[39:32];
+          5: datamux = test_DATA[47:40];
+          6: datamux = test_DATA[55:48];
+          7: datamux = test_DATA[63:56];
+    default: datamux = 8'bxxxxxxxx;
+    endcase
+end
+
+always @(posedge clk10m or negedge rst_n) begin
+    if (~rst_n) begin
+        SS_r <= SS_WAIT_SAMPLE;
+    end else begin
+        case(SS_r) 
+        SS_SEND: begin
+            tx_push_r <= 1'b1;
+            datamux_r <= datamux;
+            SS_r <= SS_WAIT_SEND;
+        end
+        SS_WAIT_SEND: begin // Sample arrived, wait for transmission done
+            tx_push_r <= 0;
+            if (txdone==1) begin    // Transmission finished
+                if(datasel_r==ulim) begin
+                    SS_r <= SS_WAIT_SAMPLE; // Current transaction done, move to the next one
+                    datasel_r <= 0;
+                end else begin
+                    SS_r <= SS_SEND;
+                    datasel_r <= datasel_r+1;
+                end                
+            end
+        end
+        SS_WAIT_SAMPLE: begin
+            if(clk_slow_r==1) begin
+                SS_r <= SS_SEND;
+            end
+        end
+        endcase
+    end    
+end
+
 // Sending data to the MCU
 uart_tx #(.CLKS_PER_BIT(10000000/115200)) u_DTX(
     .i_Clock     (clk10m),
-    .i_Tx_DV     (clk_slow_r),
-    .i_Tx_Byte   (8'hAA),
-    .o_Tx_Active (),
+    .i_Tx_DV     (tx_push_r),
+    .i_Tx_Byte   (datamux_r),
+    .o_Tx_Active (txactive),
     .o_Tx_Serial (txd),
     .o_Tx_Done   (txdone)
 );

@@ -50,15 +50,15 @@ module MKRVIDOR4000_top
 );
 
 wire wCLK10;
+wire wCLK10_dly;
 
 assign wCLK48      = iCLK;
-assign bMKR_A[0] = wCLK10;
 // system PLL
 SYSTEM_PLL PLL_inst(
   .areset(1'b0),
   .inclk0(wCLK48),
   .c0    (wCLK10),
-  .c1    (),
+  .c1    (wCLK10_dly),
   .c2    (),
   .c3    (),
   .c4    (),
@@ -66,14 +66,22 @@ SYSTEM_PLL PLL_inst(
   
   
 dl_platform u_dut(
-	.clk10m(wCLK10),
-	.rst_n (iRESETn),
-	.tdc_start(1'b0),
-	.tdc_stop (1'b0),
-	.tdc_pulse(),
-	.txd      (mcu_rx)
+	.clk10m          (wCLK10),
+  .clk10m_dly      (wCLK10_dly),
+	.rst_n           (iRESETn),
+	.tdc_start       (tdc_in),
+	.clk_sampling    (tdc_pulse),
+  .clk_sampling_dly(tdc_pulse_1),
+	.txd             (mcu_rx),
+  .txdone          (txdone)
 );
   
+assign bMKR_A[2] = wCLK10;
+assign bMKR_A[3] = wCLK10_dly;
+assign bMKR_A[0] = tdc_pulse;
+assign bMKR_A[1] = tdc_pulse_1;
+assign tdc_in    = bMKR_D[5];
+
 // signal declaration
 /*
 wire        wOSC_CLK;
