@@ -59,11 +59,10 @@ SYSTEM_PLL PLL_inst(
   .inclk0(wCLK48),
   .c0    (wCLK10),
   .c1    (wCLK10_dly),
-  .c2    (),
-  .c3    (),
-  .c4    (),
+  .c2    (wCLK480),
   .locked());
   
+wire tdc_in/*synthesis keep*/;
   
 dl_platform u_dut(
 	.clk10m          (wCLK10),
@@ -78,9 +77,10 @@ dl_platform u_dut(
   
 assign bMKR_A[2] = wCLK10;
 assign bMKR_A[3] = wCLK10_dly;
-assign bMKR_A[0] = tdc_pulse;
-assign bMKR_A[1] = tdc_pulse_1;
-assign tdc_in    = bMKR_D[5];
+assign bMKR_A[4] = tdc_pulse;
+assign bMKR_A[5] = tdc_pulse_1;
+// assign tdc_in    = bMKR_D[5];
+assign tdc_in = tdc_pulse;
 
 // signal declaration
 /*

@@ -23,7 +23,7 @@
 // Delayline Toplevel
 
 module dl_platform #(
-    parameter DATASIZE = 64
+    parameter DATASIZE = 128
 )(
     input    clk10m,        // 10 MHz Fast Clock
     input    clk10m_dly,    // 10 MHz Fast Clock with extra delay
@@ -65,15 +65,6 @@ end
 // ░▀█▀░█▀▄░█▀▀░
 // ░░█░░█░█░█░░░
 // ░░▀░░▀▀░░▀▀▀░
-
-// Generate a small internal delay to compensate for the I/O delay
-//localparam INTERNAL_DLY_LEN = 8;
-//wire [INTERNAL_DLY_LEN-1:0] compensate_delayline1_d;
-//wire [INTERNAL_DLY_LEN-1:0] compensate_delayline2_d;
-//delayline #(.LENGTH(INTERNAL_DLY_LEN)) u_DLY_start(
-//    .din(tdc_pulse)
-//)
-
 reg clk_slow_dly_r;
 always @(posedge clk10m_dly) begin
     clk_slow_dly_r <= clk_slow_r;
@@ -85,12 +76,12 @@ delayline #(.LENGTH(DATASIZE)) u_DUT(
     .din (tdc_start),
     .dout(tdc_delayline_d)
 );
-always @(posedge clk_sampling_dly) begin
+always @(posedge clk10m_dly) begin
     tdc_dq_r <= tdc_delayline_d;   
 end
 
-wire [DATASIZE-1:0] test_DATA = 64'hAA01_2345_AA01_2345;
-// wire [DATASIZE-1:0] test_DATA = tdc_dq_r;
+// wire [DATASIZE-1:0] test_DATA = 64'hAA01_2345_AA01_2345;
+wire [DATASIZE-1:0] test_DATA = tdc_dq_r;
 
 // ░█░█░█▀█░█▀▄░▀█▀░░░▀█▀░█░█░░░█▀▀░█▀█░█▀█░▀█▀░█▀▄░█▀█░█░░
 // ░█░█░█▀█░█▀▄░░█░░░░░█░░▄▀▄░░░█░░░█░█░█░█░░█░░█▀▄░█░█░█░░
@@ -107,9 +98,19 @@ localparam SS_SEND        = 2'b01;
 localparam SS_WAIT_SEND   = 2'b11;
 localparam SS_WAIT_SAMPLE = 2'b10;
 
+wire [7:0] datamux_presel [(DATASIZE/8)-1:0];
+
+genvar gi;
+generate 
+for (gi=0;gi<(DATASIZE/8);gi=gi+1) begin : gen_datamux
+    assign datamux_presel[gi] = test_DATA[((gi+1)*8)-1:gi*8];
+end
+endgenerate
+
 // Intel tools doesn't support variable as range select
 always @* begin
 //  datamux = test_DATA[(datasel_r*(8+1))-1:datasel_r*8];
+/*
     case(datasel_r)
           0: datamux = test_DATA[ 7: 0];
           1: datamux = test_DATA[15: 8];
@@ -121,7 +122,10 @@ always @* begin
           7: datamux = test_DATA[63:56];
     default: datamux = 8'bxxxxxxxx;
     endcase
+*/
+datamux = datamux_presel[datasel_r];
 end
+
 
 always @(posedge clk10m or negedge rst_n) begin
     if (~rst_n) begin
