@@ -87,14 +87,17 @@ void setup() {
 
 }
 
-int incomingByte = 0;
-
+int           incomingByte = 0;
+unsigned long time_last=0;
 // the loop function runs over and over again forever
 void loop() {
    if (Serial1.available()>0){
      incomingByte = Serial1.read();
      Serial.print(incomingByte,HEX);
-     Serial.print('\n');
+     if (millis() - time_last>100) {
+      Serial.print('\n');       
+     }
+     time_last = millis();
    }
    // static int oldstate=-1;
    // static int linect=0;

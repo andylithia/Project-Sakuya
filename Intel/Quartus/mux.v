@@ -19,23 +19,13 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-
-// A delayline module for Altera / Intel synthesis engine
-// synthesis keyword is added to enforce carry chain generation
-
-module delayline #(
-    LENGTH = 128
+/*
+module mymux #(
+    parameter SWIDTH=4
 )(
-    input  din,
-    output [LENGTH-1:0] dout
+    input [2**SWIDTH-1:0] a,
+    input [SWIDTH-1:0]    s,
+    output                y
 );
 
-wire [LENGTH-1:0] constant = {LENGTH{1'b1}}/*synthesis keep*/;
-wire dinw;
-wire [LENGTH-1:0] doutw;
-
-assign doutw = constant + dinw;
-assign dinw = din;
-assign dout = doutw;
-
-endmodule /* delayline */
+endmodule /* mymux */

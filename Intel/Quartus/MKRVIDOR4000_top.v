@@ -1,22 +1,24 @@
-/*
-* Copyright 2018 ARDUINO SA (http://www.arduino.cc/)
-* This file is part of Vidor IP.
-* Copyright (c) 2018
-* Authors: Dario Pennisi
-*
-* This software is released under:
-* The GNU General Public License, which covers the main part of 
-* Vidor IP
-* The terms of this license can be found at:
-* https://www.gnu.org/licenses/gpl-3.0.en.html
-*
-* You can be released from the requirements of the above licenses by purchasing
-* a commercial license. Buying such a license is mandatory if you want to modify or
-* otherwise use the software for commercial activities involving the Arduino
-* software without disclosing the source code of your own applications. To purchase
-* a commercial license, send an email to license@arduino.cc.
-*
-*/
+// MIT License
+// 
+// Copyright (c) 2022 andylithia
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
 
 module MKRVIDOR4000_top
 (
@@ -26,20 +28,6 @@ module MKRVIDOR4000_top
   input         iSAM_INT,
   output        oSAM_INT,
   
-  // SDRAM
-  /*
-  output        oSDRAM_CLK,
-  output [11:0] oSDRAM_ADDR,
-  output [1:0]  oSDRAM_BA,
-  output        oSDRAM_CASn,
-  output        oSDRAM_CKE,
-  output        oSDRAM_CSn,
-  inout  [15:0] bSDRAM_DQ,
-  output [1:0]  oSDRAM_DQM,
-  output        oSDRAM_RASn,
-  output        oSDRAM_WEn,
-  */
-
   // SAM D21 PINS
   inout         bMKR_AREF,
   output  [6:0]  bMKR_A,
@@ -63,22 +51,79 @@ SYSTEM_PLL PLL_inst(
   .locked());
   
 wire tdc_in/*synthesis keep*/;
-  
+wire tdc_pulse;
+wire tdc_pulse_1;
+
+localparam DELAY = 32;
+wire [DELAY-1:0] test;
+delayline #(.LENGTH(DELAY)) u_DUT(
+    .din (wCLK10_dly),
+    .dout(test)
+);
+
+
 dl_platform u_dut(
 	.clk10m          (wCLK10),
   .clk10m_dly      (wCLK10_dly),
 	.rst_n           (iRESETn),
-	.tdc_start       (tdc_in),
+	.tdc_start       (wCLK10_dly),
+  .tdc_stop        (~test[DELAY-1]),
 	.clk_sampling    (tdc_pulse),
-  .clk_sampling_dly(tdc_pulse_1),
+  // .clk_sampling_dly(tdc_pulse_1),
 	.txd             (mcu_rx),
   .txdone          (txdone)
 );
-  
+
+reg [$clog2(DELAY)-1:0] select_r/*synthesis keep*/;
+always @(posedge tdc_pulse or negedge iRESETn) begin
+  if(~iRESETn) select_r <= 0;
+  else         select_r <= select_r + 1;
+end
+
+wire pulse_out;
+
+mux32_1 u_mux(
+  .sel(select_r),
+  .result (pulse_out),
+  .data0    (test[0]),
+  .data1    (test[1]),
+  .data2    (test[2]),
+  .data3    (test[3]),
+  .data4    (test[4]),
+  .data5    (test[5]),
+  .data6    (test[6]),
+  .data7    (test[7]),
+  .data8    (test[8]),
+  .data9    (test[9]),
+  .data10   (test[10]),
+  .data11   (test[11]),
+  .data12   (test[12]),
+  .data13   (test[13]),
+  .data14   (test[14]),
+  .data15   (test[15]),
+  .data16   (test[16]),
+  .data17   (test[17]),
+  .data18   (test[18]),
+  .data19   (test[19]),
+  .data20   (test[20]),
+  .data21   (test[21]),
+  .data22   (test[22]),
+  .data23   (test[23]),
+  .data24   (test[24]),
+  .data25   (test[25]),
+  .data26   (test[26]),
+  .data27   (test[27]),
+  .data28   (test[28]),
+  .data29   (test[29]),
+  .data30   (test[30]),
+  .data31   (test[31])
+);
+
 assign bMKR_A[2] = wCLK10;
 assign bMKR_A[3] = wCLK10_dly;
-assign bMKR_A[4] = tdc_pulse;
-assign bMKR_A[5] = tdc_pulse_1;
+assign bMKR_A[4] = wCLK10_dly;
+assign bMKR_A[5] = ~pulse_out;
+// assign bMKR_A[5] = ~test[select_r];
 // assign tdc_in    = bMKR_D[5];
 assign tdc_in = tdc_pulse;
 

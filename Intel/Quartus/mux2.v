@@ -20,22 +20,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-// A delayline module for Altera / Intel synthesis engine
-// synthesis keyword is added to enforce carry chain generation
+// Enforce MUX2
 
-module delayline #(
-    LENGTH = 128
-)(
-    input  din,
-    output [LENGTH-1:0] dout
+module mux2(
+    input [1:0] A,
+    input S,
+    output Y
 );
 
-wire [LENGTH-1:0] constant = {LENGTH{1'b1}}/*synthesis keep*/;
-wire dinw;
-wire [LENGTH-1:0] doutw;
-
-assign doutw = constant + dinw;
-assign dinw = din;
-assign dout = doutw;
-
-endmodule /* delayline */
+// wire yi/*synthesis keep*/;
+wire [1:0] ai/*synthesis keep*/;
+assign Y = S?ai[1]:ai[0];
+assign ai =A;
+endmodule /*mux2*/

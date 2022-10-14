@@ -29,9 +29,9 @@ module dl_platform #(
     input    clk10m_dly,    // 10 MHz Fast Clock with extra delay
     input    rst_n,         // Global Reset
     input    tdc_start,     // Delayline input
-    // input    tdc_stop,      // TDC Latch input
+    input    tdc_stop,      // TDC Latch input
     output   clk_sampling,  // 30Hz Sampling Clock
-    output   clk_sampling_dly,
+    // output   clk_sampling_dly,
     output   txd,           // UART TX
     output   txdone         // UART TX - byte is finished
 );
@@ -40,8 +40,8 @@ module dl_platform #(
 // ░█▀▀░█░░░█▀█░█▀▀░█░█░░░█▀▀░█▀▀░█▀█░
 // ░█░░░█░░░█░█░█░░░█▀▄░░░█░█░█▀▀░█░█░
 // ░▀▀▀░▀▀▀░▀▀▀░▀▀▀░▀░▀░░░▀▀▀░▀▀▀░▀░▀░
-// parameter  TARGET_FREQ  = 30;
-parameter  TARGET_FREQ  = 1;
+parameter  TARGET_FREQ  = 30;
+// parameter  TARGET_FREQ  = 1;
 localparam SYSTEM_FREQ = 10000000;
 localparam HALF_DIV    = (SYSTEM_FREQ/TARGET_FREQ/2);
 
@@ -76,7 +76,7 @@ delayline #(.LENGTH(DATASIZE)) u_DUT(
     .din (tdc_start),
     .dout(tdc_delayline_d)
 );
-always @(posedge clk10m_dly) begin
+always @(posedge tdc_stop) begin
     tdc_dq_r <= tdc_delayline_d;   
 end
 
