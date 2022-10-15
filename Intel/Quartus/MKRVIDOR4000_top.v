@@ -80,8 +80,43 @@ always @(posedge tdc_pulse or negedge iRESETn) begin
   else         select_r <= select_r + 1;
 end
 
-wire pulse_out;
 
+localparam SELECT_RATIO = 8;
+genvar gi;
+wire [DELAY/SELECT_RATIO-1:0] pulse_select; // Selecting 32 lines from the 256 taps
+
+generate
+  for(gi=0;gi<(DELAY/SELECT_RATIO);gi=gi+1) begin : gen_pulse_select
+    assign pulse_select[gi] = test[SELECT_RATIO*(gi+1)-1];
+  end
+endgenerate
+
+// Implement 2:1 mux tree explicitly
+
+wire [15:0] mux_level0/* synthesis keep */;
+wire [7:0]  mux_level1/* synthesis keep */;
+wire [3:0]  mux_level2/* synthesis keep */;
+wire [1:0]  mux_level3/* synthesis keep */;
+wire        mux_level4/* synthesis keep */;
+wire pulse_out;
+assign pulse_out = mux_level4;
+generate
+  for(gi=0;gi<16;gi=gi+1) begin : gen_muxl0
+    assign mux_level0[gi] = select_r[0]?pulse_select[2*gi+1]:pulse_select[2*gi];
+  end
+  for(gi=0;gi<8;gi=gi+1) begin : gen_muxl1
+    assign mux_level1[gi] = select_r[1]?mux_level0[2*gi+1]:mux_level0[2*gi];
+  end
+  for(gi=0;gi<4;gi=gi+1) begin : gen_muxl2
+    assign mux_level2[gi] = select_r[2]?mux_level1[2*gi+1]:mux_level1[2*gi];
+  end
+  for(gi=0;gi<2;gi=gi+1) begin : gen_muxl3
+    assign mux_level3[gi] = select_r[3]?mux_level2[2*gi+1]:mux_level2[2*gi];
+  end
+endgenerate
+assign mux_level4 = select_r[4]?mux_level3[1]:mux_level3[0];
+
+/*
 mux32_1 u_mux(
   .sel(select_r),
   .result (pulse_out),
@@ -118,7 +153,7 @@ mux32_1 u_mux(
   .data30   (test[247]),
   .data31   (test[255])
 );
-
+*/
 assign bMKR_A[2] = wCLK10;
 assign bMKR_A[3] = wCLK10_dly;
 assign bMKR_A[4] = wCLK10_dly;

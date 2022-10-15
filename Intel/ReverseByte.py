@@ -41,21 +41,27 @@ if len(sys.argv)!=3:
     sys.exit()
 fn_in = sys.argv[1]
 fp=open(fn_in,'r')
-strin = ''
-strout = ''
-count = 0
-while fp.readable():
-    strin += fp.read()
+# This is extremely slow for ArduinoIDE to process
+# strin = ''
+#for line in fp.readlines():
+#    strin+=line
+lines_in = fp.readlines()
 fp.close()
-listin = strin.split(',')
-for e in listin:
-    e = int(e,0)
-    er = reverse_Bits(e,8)
-    strout+=f'0x{e:02X},'
-    count += 1
+count = 0
+lines_out = []
+for line in lines_in:
+    strout = ''
+    listin = line.split(',')[:-1]
+    for e in listin:
+        e = int(e,0)
+        er = reverse_Bits(e,8)
+        strout+=f'{er},'
+        count += 1
+    lines_out.append(strout+'\n')
 print(f'{count} bytes processed')
-strout=strout[:-1]
+# strout=strout[:-1]
 fn_out = sys.argv[2]
 fp = open(fn_out,'w+')
-fp.write(strout)
+# fp.write(strout)
+fp.writelines(lines_out)
 fp.close()
