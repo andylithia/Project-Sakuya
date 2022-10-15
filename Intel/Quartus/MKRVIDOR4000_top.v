@@ -116,50 +116,10 @@ generate
 endgenerate
 assign mux_level4 = select_r[4]?mux_level3[1]:mux_level3[0];
 
-/*
-mux32_1 u_mux(
-  .sel(select_r),
-  .result (pulse_out),
-  .data0    (test[7]),
-  .data1    (test[15]),
-  .data2    (test[23]),
-  .data3    (test[31]),
-  .data4    (test[39]),
-  .data5    (test[47]),
-  .data6    (test[55]),
-  .data7    (test[63]),
-  .data8    (test[71]),
-  .data9    (test[79]),
-  .data10   (test[87]),
-  .data11   (test[95]),
-  .data12   (test[103]),
-  .data13   (test[111]),
-  .data14   (test[119]),
-  .data15   (test[127]),
-  .data16   (test[135]),
-  .data17   (test[143]),
-  .data18   (test[151]),
-  .data19   (test[159]),
-  .data20   (test[167]),
-  .data21   (test[175]),
-  .data22   (test[183]),
-  .data23   (test[191]),
-  .data24   (test[199]),
-  .data25   (test[207]),
-  .data26   (test[215]),
-  .data27   (test[223]),
-  .data28   (test[231]),
-  .data29   (test[239]),
-  .data30   (test[247]),
-  .data31   (test[255])
-);
-*/
 assign bMKR_A[2] = wCLK10;
 assign bMKR_A[3] = wCLK10_dly;
 assign bMKR_A[4] = wCLK10_dly;
 assign bMKR_A[5] = ~pulse_out;
-// assign bMKR_A[5] = ~test[select_r];
-// assign tdc_in    = bMKR_D[5];
 assign tdc_in = tdc_pulse;
 
 // signal declaration

@@ -1,0 +1,20 @@
+# system info cordic24 on 2022.10.14.23:15:43
+system_info:
+name,value
+DEVICE,10CL016YU256C8G
+DEVICE_FAMILY,Cyclone 10 LP
+GENERATION_ID,1665803741
+#
+#
+# Files generated for cordic24 on 2022.10.14.23:15:43
+files:
+filepath,kind,attributes,module,is_top
+simulation/cordic24.v,VERILOG,,cordic24,true
+simulation/submodules/dspba_library_package.vhd,VHDL,,cordic24_CORDIC_0,false
+simulation/submodules/dspba_library.vhd,VHDL,,cordic24_CORDIC_0,false
+simulation/submodules/cordic24_CORDIC_0.vhd,VHDL,,cordic24_CORDIC_0,false
+#
+# Map from instance-path to kind of module
+instances:
+instancePath,module
+cordic24.CORDIC_0,cordic24_CORDIC_0

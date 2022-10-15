@@ -1,0 +1,74 @@
+Info: Starting: Create simulation model
+Info: qsys-generate C:\Users\andy1\Documents\GitHub\Project-Sakuya\Intel\Quartus\ip\cordic24.qsys --simulation=VERILOG --allow-mixed-language-simulation --output-directory=C:\Users\andy1\Documents\GitHub\Project-Sakuya\Intel\Quartus\ip\cordic24\simulation --family="Cyclone 10 LP" --part=10CL016YU256C8G
+Progress: Loading ip/cordic24.qsys
+Progress: Reading input file
+Progress: Adding CORDIC_0 [altera_CORDIC 21.1]
+Progress: Parameterizing module CORDIC_0
+Progress: Building connections
+Progress: Parameterizing connections
+Progress: Validating
+Progress: Done reading input file
+Info: cordic24: Generating cordic24 "cordic24" for SIM_VERILOG
+Info: CORDIC_0: C:/intelfpga_lite/21.1/quartus/dspba/backend/windows64/cmdPolyEval -target Cyclone10LP -frequency 100 -name cordic24_CORDIC_0 -noChanValid -faithfulRounding -printMachineReadable -lang VHDL -speedgrade 8 FXPSinCosCordic 25 24 0 24
+Info: CORDIC_0: Latency on Cyclone 10 LP is 25 cycles
+Info: CORDIC_0: DSP Blocks Used: 0
+Info: CORDIC_0: LUTs Used: 6573
+Info: CORDIC_0: Memory Bits Used: 0
+Info: CORDIC_0: Memory Blocks Used: 0
+Info: CORDIC_0: "cordic24" instantiated altera_CORDIC "CORDIC_0"
+Info: cordic24: Done "cordic24" with 2 modules, 4 files
+Info: qsys-generate succeeded.
+Info: Finished: Create simulation model
+Info: Starting: Create Modelsim Project.
+Info: sim-script-gen --spd=C:\Users\andy1\Documents\GitHub\Project-Sakuya\Intel\Quartus\ip\cordic24\cordic24.spd --output-directory=C:/Users/andy1/Documents/GitHub/Project-Sakuya/Intel/Quartus/ip/cordic24/simulation/ --use-relative-paths=true
+Info: Doing: ip-make-simscript --spd=C:\Users\andy1\Documents\GitHub\Project-Sakuya\Intel\Quartus\ip\cordic24\cordic24.spd --output-directory=C:/Users/andy1/Documents/GitHub/Project-Sakuya/Intel/Quartus/ip/cordic24/simulation/ --use-relative-paths=true
+Info: Generating the following file(s) for MODELSIM simulator in C:/Users/andy1/Documents/GitHub/Project-Sakuya/Intel/Quartus/ip/cordic24/simulation/ directory:
+Info: 	mentor/msim_setup.tcl
+Info: Skipping VCS script generation since VHDL file $QUARTUS_INSTALL_DIR/eda/sim_lib/altera_syn_attributes.vhd is required for simulation
+Info: Generating the following file(s) for VCSMX simulator in C:/Users/andy1/Documents/GitHub/Project-Sakuya/Intel/Quartus/ip/cordic24/simulation/ directory:
+Info: 	synopsys/vcsmx/synopsys_sim.setup
+Info: 	synopsys/vcsmx/vcsmx_setup.sh
+Info: Generating the following file(s) for NCSIM simulator in C:/Users/andy1/Documents/GitHub/Project-Sakuya/Intel/Quartus/ip/cordic24/simulation/ directory:
+Info: 	cadence/cds.lib
+Info: 	cadence/hdl.var
+Info: 	cadence/ncsim_setup.sh
+Info: 	1 .cds.lib files in cadence/cds_libs/ directory
+Info: Generating the following file(s) for RIVIERA simulator in C:/Users/andy1/Documents/GitHub/Project-Sakuya/Intel/Quartus/ip/cordic24/simulation/ directory:
+Info: 	aldec/rivierapro_setup.tcl
+Info: For information on how to simulate your IP, see the explanatory comments in the simulator-specific subdirectories under C:/Users/andy1/Documents/GitHub/Project-Sakuya/Intel/Quartus/ip/cordic24/simulation/.
+Info: Regenerate these scripts whenever you make any change to any Quartus-generated IP in your project.
+Info: Finished: Create Modelsim Project.
+Info: Starting: Create block symbol file (.bsf)
+Info: qsys-generate C:\Users\andy1\Documents\GitHub\Project-Sakuya\Intel\Quartus\ip\cordic24.qsys --block-symbol-file --output-directory=C:\Users\andy1\Documents\GitHub\Project-Sakuya\Intel\Quartus\ip\cordic24 --family="Cyclone 10 LP" --part=10CL016YU256C8G
+Progress: Loading ip/cordic24.qsys
+Progress: Reading input file
+Progress: Adding CORDIC_0 [altera_CORDIC 21.1]
+Progress: Parameterizing module CORDIC_0
+Progress: Building connections
+Progress: Parameterizing connections
+Progress: Validating
+Progress: Done reading input file
+Info: qsys-generate succeeded.
+Info: Finished: Create block symbol file (.bsf)
+Info: 
+Info: Starting: Create HDL design files for synthesis
+Info: qsys-generate C:\Users\andy1\Documents\GitHub\Project-Sakuya\Intel\Quartus\ip\cordic24.qsys --synthesis=VERILOG --output-directory=C:\Users\andy1\Documents\GitHub\Project-Sakuya\Intel\Quartus\ip\cordic24\synthesis --family="Cyclone 10 LP" --part=10CL016YU256C8G
+Progress: Loading ip/cordic24.qsys
+Progress: Reading input file
+Progress: Adding CORDIC_0 [altera_CORDIC 21.1]
+Progress: Parameterizing module CORDIC_0
+Progress: Building connections
+Progress: Parameterizing connections
+Progress: Validating
+Progress: Done reading input file
+Info: cordic24: Generating cordic24 "cordic24" for QUARTUS_SYNTH
+Info: CORDIC_0: C:/intelfpga_lite/21.1/quartus/dspba/backend/windows64/cmdPolyEval -target Cyclone10LP -frequency 100 -name cordic24_CORDIC_0 -noChanValid -faithfulRounding -printMachineReadable -lang VHDL -speedgrade 8 FXPSinCosCordic 25 24 0 24
+Info: CORDIC_0: Latency on Cyclone 10 LP is 25 cycles
+Info: CORDIC_0: DSP Blocks Used: 0
+Info: CORDIC_0: LUTs Used: 6573
+Info: CORDIC_0: Memory Bits Used: 0
+Info: CORDIC_0: Memory Blocks Used: 0
+Info: CORDIC_0: "cordic24" instantiated altera_CORDIC "CORDIC_0"
+Info: cordic24: Done "cordic24" with 2 modules, 4 files
+Info: qsys-generate succeeded.
+Info: Finished: Create HDL design files for synthesis

@@ -1,0 +1,2 @@
+221014_2304_0: 256-stage delay line, 32 taps, sweeped in the correct order, LPM_MUX (4-input MUX)
+221014_2311_0: 256-stage delay line, 32 taps, sweeped in the wrong order, explicit 2-input MUX
