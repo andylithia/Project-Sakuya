@@ -27,9 +27,13 @@ module DACif#(
 	parameter DWIDTH = 8
 )(  
 	// input        clk10m,    // System Clock, used for counting - wave generation
-	input        rst_n,     // Global Reset
-	// input []     opmode,    // 
-	input [DWIDTH-1:0]  stepsize,  // 
+	input               rst_n,    // Global Reset
+	input [1:0]         opmode,   // 00: triangle wave
+								  // 01: sawtooth
+	                              // 10: square wave
+	                              // 11: pulse
+	input [DWIDTH-1:0]  stepsize,  // Does not support fractal-N
+	                               // The non-integer division noise can't be removed
 	output              chirp_n,   //
 	// 
 	input               dclk,      // Device Interface Clock
