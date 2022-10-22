@@ -52,16 +52,33 @@ SYSTEM_PLL PLL_inst(
   .locked());
 
 wire pwm_out;
+
+wire [19:0] incr;
+wire pwm_grant;
+
 SPWM12 u_SPWM12(
   .clk(wCLK480),
   .rst_n(iRESETn),
   .x0(19432),
   // .increment(8192),
-  .increment((2**20)/4),
-  .pwm_out(pwm_out)
+  // .increment((2**20)/16),
+  .increment(incr),
+  .pwm_out(pwm_out),
+  .PWM_grant(pwm_grant)
 );
 
+wire update;
+
+FMC u_FMC(
+	.inc    (pwm_grant),
+	.rst_n  (iRESETn),
+	.dout   (incr),
+	.update (update)
+);
+
+assign bMKR_A[3] = update;
 assign bMKR_A[4] = pwm_out;
+assign bMKR_A[5] = pwm_grant;
 
 
 

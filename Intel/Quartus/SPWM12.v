@@ -30,7 +30,8 @@ module SPWM12 (
 									// 
 	input [19:0]        increment,
 	output              pwm_out,
-	output              pwm_async
+	output              pwm_async,
+	output              PWM_grant
 );
 
 	// Clock Divider
@@ -46,7 +47,7 @@ module SPWM12 (
 	
 	localparam DIN_WIDTH  = 20;
 	localparam DOUT_WIDTH = 17;
-	localparam PWM_WIDTH  = 12;
+	localparam PWM_WIDTH  = 10;
 	reg [DIN_WIDTH-1:0]              cordic_input_r;
 	wire signed [DOUT_WIDTH-1:0]     sine; // 17-bit signed fixed-point
 
@@ -63,8 +64,9 @@ module SPWM12 (
 	// 
 	wire signed [DOUT_WIDTH-1:0] sine_zerobias = sine + ((2**(DOUT_WIDTH-2))); // remove bias
 	reg  [PWM_WIDTH-1:0] sine_zerobias_r;
+	reg  [PWM_WIDTH-1:0] sine_zerobias_r1;
 
-	wire PWM_grant;
+	// wire PWM_grant;
 
 	localparam CYCLE_FACTOR = (2**DIVLEN)*16;
 	
@@ -81,8 +83,12 @@ module SPWM12 (
 				sine_zerobias_r <= sine_zerobias[DOUT_WIDTH-1:DOUT_WIDTH-PWM_WIDTH]*2;
 			end else if (SS_r==CYCLE_FACTOR)begin
 				// Wait for PWM grant
-				if(PWM_grant) SS_r <= 0;
-				else          SS_r <= SS_r;
+				if(PWM_grant) begin
+					SS_r <= 0;
+					sine_zerobias_r1 <= sine_zerobias_r;
+				end else begin
+					SS_r <= SS_r;
+				end
 			end else begin
 				SS_r <= SS_r + 1;
 			end
