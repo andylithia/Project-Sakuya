@@ -19,12 +19,16 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
+//==============================================================================
+// Synchronous DAC Controller
+// 12-bit Internal Resolution, 8-bit output resolution
+module DACcon(
+    input         clk_fast,
+    input         rst_n,
+    input [1:0]   mode,
+    output [7:0]  dac_out,
+    output [11:0] raw_out,
 
-// Generic Synchronous SPWM Generator
-// 
-// 
-module SPWM(
-	input 
 );
 
-/* SPWM */
+endmodule /* DACcon */

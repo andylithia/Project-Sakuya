@@ -21,7 +21,7 @@
 // SOFTWARE.
 
 // Generic Synchronous SPWM Generator
-// 
+// 12-bit Resolution
 module SPWM12 (
 	input               clk,
 	input               rst_n,

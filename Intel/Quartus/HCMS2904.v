@@ -108,7 +108,7 @@ always @(posedge clk or negedge rst_n) begin
         end
         SS_CLR: begin // Clear All dot registers
             if (SS_cnt_r == N*UNIT_H*UNIT_W) begin
-                dev_dout_mux_sel <= SSDM_PCMD;
+                // dev_dout_mux_sel <= SSDM_PCMD;
                 pcmdin_sr <= pcmdin;
                 dev_rs_r <= 1'b1;
                 SS_state_r <= SS_TXCMD;
@@ -119,7 +119,7 @@ always @(posedge clk or negedge rst_n) begin
         end
         SS_TXCMD: begin // Transmit Control Word
             if (SS_cnt_r == 8)  begin
-                dev_dout_mux_sel <= SSDM_PDATA;
+                // dev_dout_mux_sel <= SSDM_PDATA;
                 pdatain_sr <= pdatain;
                 dev_rs_r <= 1'b0;
                 SS_state_r <= SSDM_PDATA;
