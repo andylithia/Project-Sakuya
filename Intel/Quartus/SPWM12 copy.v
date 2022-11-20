@@ -21,7 +21,7 @@
 // SOFTWARE.
 
 // Generic Synchronous SPWM Generator
-// 12-bit Resolution
+// 
 module SPWM12 (
 	input               clk,
 	input               rst_n,
@@ -46,7 +46,6 @@ module SPWM12 (
 	localparam DIN_WIDTH  = 20;
 	localparam DOUT_WIDTH = 17;
 	localparam PWM_WIDTH  = 10;
-
 	reg [DIN_WIDTH-1:0]              cordic_input_r;
 	wire signed [DOUT_WIDTH-1:0]     sine; // 17-bit signed fixed-point
 
@@ -62,13 +61,9 @@ module SPWM12 (
 	// The CORDIC module has a pipeline delay of 16-clocks;
 	// 
 	wire signed [DOUT_WIDTH-1:0] sine_zerobias = sine + ((2**(DOUT_WIDTH-2))); // remove bias
-	// reg  [PWM_WIDTH-1:0] sine_zerobias_r;
+	reg  [PWM_WIDTH-1:0] sine_zerobias_r;
 	reg  [PWM_WIDTH-1:0] sine_zerobias_r1;
-	reg [6:0]  error_r;
-	reg [8:0]  SDM_lsb_r;  // 1b ovf, 8b  data
-	reg [9:0] SDM_msb_r;   // 1b ovf, 9b  data 
-	wire [17:0] SDM_out = {SDM_msb_r+SDM_lsb_r[8], SDM_lsb_r[7:0]};
-	reg [10:0]  SDM_out_r; // 1b ovf, 10b data
+
 	// wire PWM_grant;
 	localparam CYCLE_FACTOR = (2**DIVLEN)*16;
 		
@@ -81,18 +76,12 @@ module SPWM12 (
 			if(SS_r==CYCLE_FACTOR-1) begin
 				SS_r <= SS_r + 1;
 				cordic_input_r  <= cordic_input_r + increment;
-				// sine_zerobias_r <= sine_zerobias[DOUT_WIDTH-1:DOUT_WIDTH-PWM_WIDTH]*2;
-				SDM_lsb_r <= {1'b0, sine_zerobias[7:0]} + error_r;
-				SDM_msb_r <= {1'b0, sine_zerobias[16:8]};
+				sine_zerobias_r <= sine_zerobias[DOUT_WIDTH-1:DOUT_WIDTH-PWM_WIDTH]*2;
 			end else if (SS_r==CYCLE_FACTOR)begin
-				SS_r <= SS_r + 1;
-				SDM_out_r <= SDM_out[17:7];
-				error_r   <= SDM_out[6:0];
-			end else if (SS_r==CYCLE_FACTOR+1) begin
 				// Wait for PWM grant
 				if(PWM_grant) begin
 					SS_r <= 0;
-					sine_zerobias_r1 <= SDM_out_r;
+					sine_zerobias_r1 <= sine_zerobias_r;
 				end else begin
 					SS_r <= SS_r;
 				end
@@ -108,7 +97,7 @@ module SPWM12 (
 		else       cnt_r <= cnt_r + 1;
 	end
 	assign PWM_grant = cnt_r == 0;
-	assign pwm_out = sine_zerobias_r1 > cnt_r;
+	assign pwm_out = sine_zerobias_r > cnt_r;
 
 endmodule /* SPWM */
 /* vim: set ts=4 sw=4 noet */
