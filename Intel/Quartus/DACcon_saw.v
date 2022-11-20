@@ -39,14 +39,11 @@
 // 2.Steps needed: (2**12)/aincr = 4096
 // 3.Division ratio when the fast clock is 384MHz: (384MHz*2ms)/N_steps= 187.5
 // Oops, fractal-N division ratio is not supported yet. It requires another SDM
+//
 // Falling back to step 1:
 // Set aincr = 2
 // Steps needed: tlen   = 2048
 // Division ratio: tstep = 375
-// 
-// Fast Clock: 384MHz
-// Desired chirp interval: 2ms
-// Number of cycles usable: 768000 -> 20bits
 //
 module DACcon_saw(
     input         clk_fast,
@@ -58,6 +55,15 @@ module DACcon_saw(
     output [7:0]  out_sdm,  // Sigma-Delta Dithered Output (8bits)
     output        overflow
 );
+    // Amplitude 1st order SDM implementation
+	reg [3:0]  error_r;
+    wire [12:0] SDM = out_raw + error_r;
+	reg [8:0]  SDM_out_r; // 1b ovf, 8b data
+    assign out_sdm = SDM_out_r;
+    always @(posedge clk_fast or negedge rst_n) begin
+        SDM_out_r <= SDM[11:4];
+        error_r   <= SDM[3:0];      
+    end 
 
     reg [1:0]  ss_r;
     reg [19:0] clkdiv_r;
