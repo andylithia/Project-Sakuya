@@ -31,7 +31,6 @@
 //         /   |  /   |  /   |  /   | 
 //        /    | /    | /    | /    | 
 //  -----'     |/     |/     |/     |/
-// 
 //
 // Usage Example:
 // Expected output: Full Range, 2ms chirp

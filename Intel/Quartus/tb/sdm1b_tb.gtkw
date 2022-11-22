@@ -1,0 +1,23 @@
+[*]
+[*] GTKWave Analyzer v3.3.104 (w)1999-2020 BSI
+[*] Tue Nov 22 11:33:59 2022
+[*]
+[dumpfile] "/home/andylithia/github/Project-Sakuya/Intel/Quartus/tb/sdm1b_tb.vcd"
+[dumpfile_mtime] "Tue Nov 22 11:33:27 2022"
+[dumpfile_size] 6030197
+[savefile] "/home/andylithia/github/Project-Sakuya/Intel/Quartus/tb/sdm1b_tb.gtkw"
+[timestart] 472505000
+[size] 2160 1299
+[pos] -7 -53
+*-20.214815 478000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] sdm1b_tb.
+[sst_width] 221
+[signals_width] 94
+[sst_expanded] 1
+[sst_vpaned_height] 389
+@28
+sdm1b_tb.dout
+@29
+sdm1b_tb.tb_clk_r
+[pattern_trace] 1
+[pattern_trace] 0

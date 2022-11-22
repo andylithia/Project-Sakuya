@@ -21,7 +21,7 @@
 // SOFTWARE.
 //
 //==============================================================================
-// FM Controller
+// Frequency-Modulation Controller
 // 
 
 module FMC(
