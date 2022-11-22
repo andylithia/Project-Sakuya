@@ -1,5 +1,5 @@
 `timescale 1ns/1ps
-module sdm1b_tb;
+module fracdiv_tb;
 
     reg tb_clk_r;
     reg tb_rst_nr;
@@ -7,8 +7,8 @@ module sdm1b_tb;
     reg [11:0] tb_din_r;
 
     initial begin
-        $dumpfile("sdm1b_tb.vcd");
-        $dumpvars(0, sdm1b_tb);
+        $dumpfile("fracdiv_tb.vcd");
+        $dumpvars(0, fracdiv_tb);
         tb_rst_nr = 1;
         tb_clk_r  = 0;
         tb_din_r  = 0;
@@ -20,17 +20,19 @@ module sdm1b_tb;
         $finish;
     end
 
+    // This configuration divides the input by 2*3 = 6
+
     wire dout;
-    sdm1b u_DUT(
-        .clk_fast(tb_clk_r ),
+    fracdiv fracdiv(
+        .clk_fast(tb_clk_r),
         .rst_n   (tb_rst_nr),
-        .din     (tb_din_r ),
-        .error   (         ),
-        .dout    (dout     )
+        .m       (0),
+        .n       (16'hFFFF/3),
+        .clk_out (dout)
     );
 
     always begin
-    #10 
+    #10
         tb_clk_r = ~tb_clk_r;
         tb_din_r = tb_din_r + 1;
     end

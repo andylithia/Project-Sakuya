@@ -1,17 +1,17 @@
 // MIT License
-// 
+//
 // Copyright (c) 2022 andylithia
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -22,7 +22,7 @@
 //
 //==============================================================================
 // Frequency-Modulation Controller
-// 
+//
 
 module FMC(
     input         inc,
@@ -30,9 +30,9 @@ module FMC(
     output [19:0] dout,
     output        update
 );
-    localparam DSIZE   = 20;
-    localparam FMWIDTH = 8;
-    wire [DSIZE-1:0] incr_lut [(2**FMWIDTH)-1:0];
+    localparam integer DSIZE   = 20;
+    localparam integer FMWIDTH = 8;
+    wire [DSIZE-1:0] incr_lut [0:(2**FMWIDTH)-1];
     assign incr_lut[  0] = 2796;
     assign incr_lut[  1] = 3331;
     assign incr_lut[  2] = 3866;
@@ -289,8 +289,8 @@ module FMC(
     assign incr_lut[253] = 138200;
     assign incr_lut[254] = 138735;
     assign incr_lut[255] = 139270;
-    
-    localparam DIV_FACTOR = 731;
+
+    localparam integer DIV_FACTOR = 731;
     reg [$clog2(DIV_FACTOR):0] div_r;
     reg [7:0]                  acc_muxsel_r;
     reg                        update_r;
@@ -310,6 +310,6 @@ module FMC(
             update_r <= 0;
         end
     end
-	 assign update = acc_muxsel_r == 0;
+    assign update = acc_muxsel_r == 0;
     assign dout = incr_lut[acc_muxsel_r];
 endmodule /* FMC */

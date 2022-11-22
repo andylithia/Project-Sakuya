@@ -28,16 +28,42 @@ module fracdiv#(
     parameter MLEN = 16,
     parameter NLEN = 16
 )(
-    
     input clk_fast,
     input rst_n,
     input [MLEN-1:0] m,
     input [NLEN-1:0] n,
-
-    output clk_out,
-    output clk_p0,
-    output clk_p180
+    output clk_out
 );
+
+    wire sdm_bit;
+    sdm1b #(.W(NLEN),.ADD_NOISE(1)) u_sdm(
+        .clk_fast(clk_fast),
+        .rst_n   (rst_n   ),
+        .din     (n       ),
+        .error   (        ),
+        .dout    (sdm_bit )
+    );
+
+    reg [MLEN-1:0] acc_r;
+    reg            clk_out_r;
+    assign clk_out = clk_out_r;
+    always @(posedge clk_fast or negedge rst_n) begin
+        if(~rst_n) begin
+            acc_r     <= 0;
+            clk_out_r <= 0;
+        end else begin
+            if(sdm_bit) begin 
+                if(acc_r>=m) begin
+                    acc_r <= 0;
+                    clk_out_r <= ~clk_out_r;
+                end else begin
+                    acc_r <= acc_r + 1;
+                end
+            end
+        end
+    end
+
+
 
 
 
