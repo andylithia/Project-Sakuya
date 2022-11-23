@@ -54,42 +54,42 @@ module DACcon_saw (
     output [ 7:0] out_sdm,   // Sigma-Delta Dithered Output (8bits)
     output        overflow
 );
-  // Amplitude 1st order SDM implementation
-  reg [3:0] error_r;
-  wire [12:0] SDM = out_raw + error_r;
-  reg [8:0] SDM_out_r;  // 1b ovf, 8b data
-  assign out_sdm = SDM_out_r;
-  always @(posedge clk_fast or negedge rst_n) begin
-    SDM_out_r <= SDM[11:4];
-    error_r   <= SDM[3:0];
-  end
-
-  reg [ 1:0] ss_r;
-  reg [19:0] clkdiv_r;
-  reg [19:0] treg_r;
-  reg [12:0] areg_r;
-  assign overflow = areg_r[12];
-  assign out_raw  = areg_r[11:0];
-
-  always @(posedge clk_fast or negedge rst_n) begin
-    if (~rst_n) begin
-      clkdiv_r <= 0;
-      treg_r   <= 0;
-      areg_r   <= 0;
-    end else begin
-      if (clkdiv_r < A_tstep) begin
-        clkdiv_r <= clkdiv_r + 1;
-      end else begin
-        clkdiv_r <= 0;
-        if (treg_r >= A_len) begin
-          treg_r <= 0;
-          areg_r <= 0;
-        end else begin
-          treg_r <= treg_r + 1;
-          areg_r <= areg_r + A_aincr;
-        end
-      end
+    // Amplitude 1st order SDM implementation
+    reg [3:0] error_r;
+    wire [12:0] SDM = out_raw + error_r;
+    reg [8:0] SDM_out_r;  // 1b ovf, 8b data
+    assign out_sdm = SDM_out_r;
+    always @(posedge clk_fast or negedge rst_n) begin
+        SDM_out_r <= SDM[11:4];
+        error_r   <= SDM[3:0];
     end
-  end
+
+    reg [ 1:0] ss_r;
+    reg [19:0] clkdiv_r;
+    reg [19:0] treg_r;
+    reg [12:0] areg_r;
+    assign overflow = areg_r[12];
+    assign out_raw  = areg_r[11:0];
+
+    always @(posedge clk_fast or negedge rst_n) begin
+        if (~rst_n) begin
+            clkdiv_r <= 0;
+            treg_r   <= 0;
+            areg_r   <= 0;
+        end else begin
+            if (clkdiv_r < A_tstep) begin
+                clkdiv_r <= clkdiv_r + 1;
+            end else begin
+                clkdiv_r <= 0;
+                if (treg_r >= A_len) begin
+                    treg_r <= 0;
+                    areg_r <= 0;
+                end else begin
+                    treg_r <= treg_r + 1;
+                    areg_r <= areg_r + A_aincr;
+                end
+            end
+        end
+    end
 
 endmodule  /* DACcon_saw */

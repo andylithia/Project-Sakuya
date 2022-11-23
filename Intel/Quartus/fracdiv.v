@@ -8,10 +8,10 @@
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,10 +20,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 //==============================================================================
-// 
+//
 // Fractal Frequency Divider
-// Divide Ratio is M/N
+// Divide Ratio is 2*(M+1)/((2**NLEN)/N)
 // New divider ratio are loaded each cycle
+//
 module fracdiv#(
     parameter MLEN = 16,
     parameter NLEN = 16
@@ -35,11 +36,13 @@ module fracdiv#(
     output clk_out
 );
 
+    reg [MLEN-1:0] m_r;
+    reg [NLEN-1:0] n_r;
     wire sdm_bit;
     sdm1b #(.W(NLEN),.ADD_NOISE(1)) u_sdm(
         .clk_fast(clk_fast),
         .rst_n   (rst_n   ),
-        .din     (n       ),
+        .din     (n_r     ),
         .error   (        ),
         .dout    (sdm_bit )
     );
@@ -51,20 +54,20 @@ module fracdiv#(
         if(~rst_n) begin
             acc_r     <= 0;
             clk_out_r <= 0;
+            m_r       <= 0;
+            n_r       <= 0;
         end else begin
             if(sdm_bit) begin 
-                if(acc_r>=m) begin
+                if(acc_r>=m_r) begin
                     acc_r <= 0;
                     clk_out_r <= ~clk_out_r;
                 end else begin
                     acc_r <= acc_r + 1;
                 end
             end
+            m_r <= m;
+            n_r <= n;
         end
     end
-
-
-
-
 
 endmodule /* fracdiv */
