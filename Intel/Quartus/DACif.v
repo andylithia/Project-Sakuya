@@ -19,58 +19,56 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-
-// DAC controller
-// Operating Modes:
+//==============================================================================
+//
+// DAC Parallel to Serial Controller
 //
 module DACif #(
     parameter integer DWIDTH = 8
-) (
-    // input        clk10m,    // System Clock, used for counting - wave generation
-    input               rst_n,     // Global Reset
-    input  [       1:0] opmode,    // 00: triangle wave
-    // 01: sawtooth
-    // 10: square wave
-    // 11: pulse
-    input  [DWIDTH-1:0] stepsize,  // Does not support fractal-N
-                                   // The non-integer division noise can't be removed
-    output              chirp_n,   //
-    input               dclk,      // Device Interface Clock
-    input               dce_n,     // Device Latch Signal, from the device's internal divider
-    output [DWIDTH-1:0] dout       // Device Parallel Data
+)(
+    input              clk_4M, // Use PLL to adjust the phase of this one when necessary
+    input              rst_n,       //
+    input [DWIDTH-1:0] din,         // Parallel Data Input
+    input              a,           // Address 
+    input              DAC_scen,    //
+    output             dout         // Serial Data Output
 );
+    reg [DWIDTH+1:0]           sreg_r;  // Shift register
+    reg [1:0]                  SS_r;
+    reg [$clog2(DWIDTH+1)-1:0] txcnt_r; // Transmit Counter
+    parameter integer S_WAIT_SCEN = 0;  // Wait for SCE to fall
+    parameter integer S_TRANSMIT = 1;
+    parameter integer S_A = 2;
+    parameter integer S_G = 3;
 
-  reg            up_dn_r;
-  reg [DWIDTH:0] cnt_r;
-  always @(negedge dce_n or negedge rst_n) begin
-    if (~rst_n) begin
-      up_dn_r <= 0;
-      cnt_r   <= 0;
-    end else begin
-      if (cnt_r[DWIDTH]) begin
-        // Overflow, wrapback
-        up_dn_r <= ~up_dn_r;
-        if (up_dn_r) cnt_r <= cnt_r - stepsize;
-        else cnt_r <= cnt_r + stepsize;
-      end else begin
-        if (up_dn_r) cnt_r <= cnt_r + stepsize;
-        else cnt_r <= cnt_r - stepsize;
-      end
+    assign dout = sreg_r[0];
+
+    always @(posedge clk_4M or negedge rst_n) begin
+        if(~rst_n) begin
+            sreg_r <= 0;
+        end else begin
+            if(SS_r == S_WAIT_SCEN) begin
+                if(~DAC_scen) begin
+                    txcnt_r <= 0;
+                    SS_r    <= S_TRANSMIT;
+                    sreg_r  <= {1'b0, sreg_r[DWIDTH+1:1]};  // Shift Right, LSB Out
+                end else begin
+                    sreg_r <= {1'b1,a,din};
+                end
+            end else if (SS_r == S_TRANSMIT) begin
+                sreg_r <= {1'b0, sreg_r[DWIDTH+1:1]};       // Shift Right, LSB Out
+                if(txcnt_r==16) begin
+                    SS_r <= S_A;
+                end else begin
+                    txcnt_r <= txcnt_r + 1;
+                end
+            end else if (SS_r == S_A) begin
+                sreg_r <= {1'b0, sreg_r[DWIDTH+1:1]};       // Shift Right, LSB Out
+                SS_r <= S_G;
+            end else if (SS_r == S_A) begin
+                sreg_r <= {1'b0, sreg_r[DWIDTH+1:1]};       // Shift Right, LSB Out
+                SS_r <= S_WAIT_SCEN;
+            end
+        end
     end
-  end
-
-  reg [DWIDTH-1:0] out_sr;
-  always @(negedge dclk or negedge rst_n) begin
-    if (~rst_n) begin
-      out_sr <= 0;
-    end else begin
-      if (~dce_n) out_sr <= cnt_r;
-      else out_sr <= {1'bx, out_sr[DWIDTH-1:1]};
-    end
-  end
-
-  assign dout = out_sr[0];
-
-
-endmodule  /* DACif */
-/* vim: set ts=4 sw=4 noet */
+endmodule /* DACif */
