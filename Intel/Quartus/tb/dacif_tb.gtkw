@@ -1,0 +1,33 @@
+[*]
+[*] GTKWave Analyzer v3.3.104 (w)1999-2020 BSI
+[*] Thu Nov 24 04:29:01 2022
+[*]
+[dumpfile] "/home/andylithia/github/Project-Sakuya/Intel/Quartus/tb/dacif_tb.vcd"
+[dumpfile_mtime] "Thu Nov 24 04:28:35 2022"
+[dumpfile_size] 3522
+[savefile] "/home/andylithia/github/Project-Sakuya/Intel/Quartus/tb/dacif_tb.gtkw"
+[timestart] 268600
+[size] 1074 1293
+[pos] -1 -1
+*-16.396730 350000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] dacif_tb.
+[sst_width] 221
+[signals_width] 174
+[sst_expanded] 1
+[sst_vpaned_height] 387
+@28
+dacif_tb.tb_clk_div16
+dacif_tb.tb_clk_r
+@22
+dacif_tb.tb_clkdiv_r[3:0]
+@28
+dacif_tb.tb_din_test_r[7:0]
+dacif_tb.dout
+dacif_tb.u_DUT.DAC_scen
+dacif_tb.u_DUT.SS_r[1:0]
+@22
+dacif_tb.u_DUT.sreg_r[9:0]
+@23
+dacif_tb.u_DUT.txcnt_r[4:0]
+[pattern_trace] 1
+[pattern_trace] 0
