@@ -35,7 +35,7 @@ module DACif #(
 );
     reg [DWIDTH+1:0]           sreg_r;  // Shift register
     reg [1:0]                  SS_r;
-    reg [$clog2(DWIDTH+1)-1:0] txcnt_r; // Transmit Counter
+    reg [$clog2(DWIDTH+1):0] txcnt_r; // Transmit Counter
     parameter integer S_WAIT_SCEN = 0;  // Wait for SCE to fall
     parameter integer S_TRANSMIT = 1;
     parameter integer S_A = 2;
@@ -45,6 +45,8 @@ module DACif #(
 
     always @(posedge clk_4M or negedge rst_n) begin
         if(~rst_n) begin
+            txcnt_r <= 0;
+            SS_r <= S_WAIT_SCEN;
             sreg_r <= 0;
         end else begin
             if(SS_r == S_WAIT_SCEN) begin
@@ -57,7 +59,7 @@ module DACif #(
                 end
             end else if (SS_r == S_TRANSMIT) begin
                 sreg_r <= {1'b0, sreg_r[DWIDTH+1:1]};       // Shift Right, LSB Out
-                if(txcnt_r==16) begin
+                if(txcnt_r==8) begin
                     SS_r <= S_A;
                 end else begin
                     txcnt_r <= txcnt_r + 1;
@@ -65,7 +67,7 @@ module DACif #(
             end else if (SS_r == S_A) begin
                 sreg_r <= {1'b0, sreg_r[DWIDTH+1:1]};       // Shift Right, LSB Out
                 SS_r <= S_G;
-            end else if (SS_r == S_A) begin
+            end else if (SS_r == S_G) begin
                 sreg_r <= {1'b0, sreg_r[DWIDTH+1:1]};       // Shift Right, LSB Out
                 SS_r <= S_WAIT_SCEN;
             end
