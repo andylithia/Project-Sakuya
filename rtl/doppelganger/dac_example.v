@@ -46,7 +46,7 @@ module dac_example;
     // 0x0F         __--________________--------------
     // 0x0F         __________________----------------
     // Emulate the SCEn signal (which is inside the chip)
-    // To provide accurate alignment, the user can change the position by 
+    // To provide accurate alignment, the user can change the position by
     // changing the _preload value
 
     // Settings

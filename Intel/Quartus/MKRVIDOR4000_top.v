@@ -41,6 +41,7 @@ wire wCLK10;
 wire wCLK10_dly;
 
 assign wCLK48      = iCLK;
+wire locked;
 // system PLL
 SYSTEM_PLL PLL_inst(
   .areset(1'b0),
@@ -49,38 +50,90 @@ SYSTEM_PLL PLL_inst(
   // .c0    (wCLK10),
   // .c1    (wCLK10_dly),
   // .c2    (wCLK480),
-  .locked());
+  .locked(locked));
 
-wire pwm_out;
+  wire       rxdv;
+  wire [7:0] rxd;
+  uart_rx #(.CLKS_PER_BIT(48000000/9600)) u_rx(
+    .i_Clock     (wCLK48),
+    .i_Rx_Serial (mcu_tx),
+    .o_Rx_DV     (rxdv  ),
+    .o_Rx_Byte   (rxd   )
+  );
 
-wire [19:0] incr;
-wire pwm_grant;
-
-SPWM12 u_SPWM12(
-  .clk(wCLK480),
-  .rst_n(iRESETn),
-  .x0(19432),
-  // .increment(8192),
-  // .increment((2**20)/16),
-  .increment(incr),
-  .pwm_out(pwm_out),
-  .PWM_grant(pwm_grant)
-);
-
-wire update;
-
-FMC u_FMC(
-	.inc    (pwm_grant),
-	.rst_n  (iRESETn),
-	.dout   (incr),
-	.update (update)
-);
-
-assign bMKR_A[3] = update;
-assign bMKR_A[4] = pwm_out;
-assign bMKR_A[5] = pwm_grant;
+  reg       txdv_r;
+  reg [7:0] txd_r;
+  wire       txdone;
+  uart_tx #(.CLKS_PER_BIT(48000000/9600)) u_tx(
+    .i_Clock     (wCLK48),
+    .i_Tx_DV     (txdv_r),
+    .i_Tx_Byte   (txd_r ),
+    .o_Tx_Active (      ),
+    .o_Tx_Serial (mcu_rx),
+    .o_Tx_Done   (txdone)
+  );
 
 
+  localparam N = 128;
+  wire latch_clock;
+  wire [N-1:0] dout;
+  reg  [N-1:0] dout_r /*synthesis keep*/;
+  reg  [N-1:0] dout_r1 /*synthesis keep*/; // Synchronizer
+  wire [N-1:0] dout_dummy/*synthesis keep*/;
+  wire [$clog2(N)-1:0] dout_mux_sel; // 7bits
+  wire dout_mux;
+
+  /*
+  reg [7:0] sr;
+  reg [7:0] srr;
+  wire srclk    = bMKR_D[2];
+  #wire srlatch  = bMKR_D[1];
+  wire srdin    = bMKR_D[0];
+
+  assign dout_mux_sel = srr[6:0];
+
+  always @(posedge srclk) begin
+    if(srlatch) srr <= sr;
+    else        sr <= {sr, srdin};
+  end
+
+  */
+  reg [23:0] s_cnt_r; // Count to 2^24=16,777,216
+                      // Clk div by 48e6/(2^24)=2.861023 Hz
+  reg [23:0] cnt_r;   //
+
+  reg [7:0] srr;
+  always @(posedge wCLK48) begin
+    if(rxdv) srr <= rxd;
+  end
+
+  mux8_pyMUX8 u_dout_mux(
+    .A(dout_r1),
+    .S(dout_mux_sel),
+    .Y(dout_mux)
+  );
+
+  always @(posedge wCLK48) begin
+    if(s_cnt_r==0) begin
+      // Done, Emit
+      cnt_r <= 0;
+      txd_r  <= cnt_r;
+      txdv_r <= 0;
+    end else begin
+      if(dout_mux==1'b1) cnt_r <= cnt_r + 1'b1;
+      txdv_r <= 0;
+    end
+  end
+
+  delayline #(.LENGTH(N)) u_DUT(.din(wCLK48),.dout(dout));
+  always @(posedge wCLK48) begin
+    dout_r <= dout;
+    dout_r1 <= dout_r;
+  end
+
+  assign dout_dummy = ~dout_r;
+  assign bMKR_A[6] = &dout_r;
+  assign bMKR_A[5] = dout_mux;
 
 // signal declaration
 /*
